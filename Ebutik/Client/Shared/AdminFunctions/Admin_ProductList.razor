@@ -1,0 +1,43 @@
+﻿@inject IProductManager ProductManager
+@inject NavigationManager NavigationManager
+<MudTable Items="@ProductList">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Products</MudText>
+        <MudSpacer/>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Category</MudTh>
+        <MudTh>Stock</MudTh>
+        <MudTh>Price</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Category">@context.Category</MudTd>
+        <MudTd DataLabel="Stock">@context.Stock</MudTd>
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+        <MudTd><MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Dark" @onclick="(()=> DeleteProduct(context.Id) )">Delete</MudButton></MudTd>
+        <MudTd><MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Dark" @onclick="(()=> ViewProduct(context.Id) )">Edit</MudButton></MudTd>
+    </RowTemplate>
+</MudTable>
+@code {
+    public int Id { get; set; }
+
+    public List<ProductModel>? ProductList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProductList = await ProductManager.GetProducts();
+    }
+
+
+    public async Task DeleteProduct(int id)
+    {
+        await ProductManager.RemoveProduct(id);
+    }
+
+    public async Task ViewProduct(int url)
+    {
+        NavigationManager.NavigateTo($"/api/product/{url}");
+    }
+}

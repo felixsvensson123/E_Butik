@@ -1,0 +1,20 @@
+﻿@inject IProductManager ProductManager
+@using Microsoft.Extensions.Logging
+
+<h3>Add Product!</h3>
+<EditForm Model="@Product" OnValidSubmit="PostProduct">
+  <InputText id="@Product.Name" @bind-Value="Product.Name"></InputText>
+  <button type="submit">Post</button>
+</EditForm>
+
+@code {
+ 
+  public ProductModel Product { get; set; } = new();
+
+  public async Task PostProduct()
+  {
+    await ProductManager.AddProduct(Product);
+    StateHasChanged();
+  }
+ 
+}

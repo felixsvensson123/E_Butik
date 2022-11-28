@@ -1,0 +1,43 @@
+﻿@inject IProductManager ProductManager
+
+<h3>AddProduct =D</h3>
+<ul class="admin-list-products">
+    @foreach (var product in ProductList)
+    {
+        <li class="admin-media my-3">
+            <div class="admin-products-wrapper mr-2">
+                <a href="/api/product/@product.Id">
+                    <img class="admin-img-products" src="@product.ImgUrl" alt="@product.Name"/>
+                </a>
+                <div class="admin-products-body">
+                    <a href="/api/product/@product.Id">
+                        <h4 class="mb-0">
+                            @product.Name
+                        </h4>
+                        <p>@product.Category</p>
+                        <p>@product.Price:-</p>
+                        <P>@product.Stock in stock</p>
+                    </a>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+@code {
+    
+    public List<ProductModel> ProductList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProductList = await ProductManager.GetProducts();
+        StateHasChanged();
+    }
+
+    /*public async Task AddInterest()
+    {
+        await ProductManager.AddProduct(productModel);
+        StateHasChanged();
+    }*/
+
+}
