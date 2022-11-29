@@ -1,10 +1,10 @@
 ﻿@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
-
+<h1>Regiser Account</h1>
 <EditForm Model="registerModel" OnValidSubmit="RegisterUser">
     <DataAnnotationsValidator />
     <div class="form-group row">
-        <label for="Username" class="col-md-2 col-form-label">Username:</label>
+        <label for="Username">Username:</label>
         <div class="col-md-10">
             <InputText @bind-Value="registerModel.Username" class="form-control" id="Username"></InputText>
             <ValidationMessage For="@(() => registerModel.Username)" />
@@ -12,29 +12,26 @@
     </div>
 
     <div class="form-group row">
-        <label for="Password" class="col-md-2 col-form-label">Password:</label>
+        <label for="Password" >Password:</label>
         <div class="col-md-10">
-            <InputText @bind-Value="registerModel.Password" class="form-control" id="Password"></InputText>
+            <InputText @bind-Value="registerModel.Password" label="Password" class="form-control" id="Password"></InputText>
             <ValidationMessage For="@(() => registerModel.Password)" />
         </div>
     </div>
-
     <div class="form-group row">
-        <label for="ConfirmPassword" class="col-md-2 col-form-label">Confirm Password:</label>
+        <label for="ConfirmPassword">Confirm Password:</label>
         <div class="col-md-10">
             <InputText @bind-Value="registerModel.ConfirmPassword" class="form-control" id="ConfirmPassword"></InputText>
             <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin-top: 15px">
         <div class="col-md-12 text-right">
             <button type="submit" class="btn btn-success">Register</button>
         </div>
     </div>
 </EditForm>
-
-<h3>Register</h3>
 
 @code {
 
@@ -44,7 +41,7 @@
     public async Task RegisterUser()
     {
         string result = await UserManager.RegisterUser(registerModel);
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/welcome");
     }
 
 }

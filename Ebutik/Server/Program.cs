@@ -6,13 +6,9 @@ global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Http;
-global using BlazorEcom.Shared;
-global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authorization;
 global using Newtonsoft.Json;
 global using BlazorEcom.Server;
-global using BlazorEcom.Shared;
-global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +24,7 @@ var dataConnectionString = builder.Configuration.GetConnectionString("DefaultCon
 //Sets up db connection
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(dataConnectionString));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
-
+builder.Services.AddResponseCompression();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
@@ -55,7 +51,6 @@ app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 

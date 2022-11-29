@@ -1,0 +1,67 @@
+﻿@inject IUserManager UserManager
+@inject NavigationManager NavigationManager
+
+@if (isLoggedin == false)
+{
+    <h1>Sign in to account</h1>
+    <EditForm Model=user OnValidSubmit="LoginUser">
+        <DataAnnotationsValidator />
+        <div class="form-group row">
+            <label for="Username">Username:</label>
+            <div class="col-md-10">
+                <InputText @bind-Value="user.Username" class="form-control" id="Username"></InputText>
+                <ValidationMessage For="@(() => user.Username)" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="Password">Password:</label>
+            <div class="col-md-10">
+                <InputText @bind-Value="user.Password" label="Password" class="form-control" id="Password"></InputText>
+                <ValidationMessage For="@(() => user.Password)" />
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 15px">
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-success">Sign in</button>
+                <p>@ErrorMessage</p>
+            </div>
+        </div>
+    </EditForm>
+}
+else
+{
+    <p>SignOut here</p>
+}
+@code {
+    [Parameter]
+    public LoginModel user { get; set; } = new();
+
+    string ErrorMessage { get; set; }
+
+    public bool isLoggedin { get; set; } = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        isLoggedin = false;
+        return base.OnInitializedAsync();
+    }
+
+    public async Task LoginUser()
+    {
+        string result = await UserManager.LoginUser(user);
+        Console.WriteLine(result);
+        if(user != null)
+        {
+            NavigationManager.NavigateTo("/Welcome");
+            isLoggedin = true;
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Login Failed");
+            ErrorMessage = "Login Failed";
+        }
+    }
+}
