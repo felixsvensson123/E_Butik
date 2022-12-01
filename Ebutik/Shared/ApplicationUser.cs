@@ -11,5 +11,6 @@ namespace BlazorEcom.Shared
     {
         public string? CustomerName { get; set; }
         public string? Adress { get; set; }
+        
     }
 }

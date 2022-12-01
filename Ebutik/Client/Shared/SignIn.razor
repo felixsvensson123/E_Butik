@@ -1,67 +1,80 @@
 ﻿@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
 
-@if (isLoggedin == false)
+@if (IsLoggedin == false)
 {
-    <h1>Sign in to account</h1>
-    <EditForm Model=user OnValidSubmit="LoginUser">
-        <DataAnnotationsValidator />
-        <div class="form-group row">
-            <label for="Username">Username:</label>
-            <div class="col-md-10">
-                <InputText @bind-Value="user.Username" class="form-control" id="Username"></InputText>
-                <ValidationMessage For="@(() => user.Username)" />
+    <div class="external-container">
+        <h1>Sign in to account</h1>
+        <EditForm Model=user OnValidSubmit="LoginUser">
+            <DataAnnotationsValidator/>
+            <div class="form-group row">
+                <label for="Username">Username:</label>
+                <div class="col-md-10">
+                    <InputText @bind-Value="user.Username" class="form-control" id="Username"></InputText>
+                    <ValidationMessage For="@(() => user.Username)"/>
+                </div>
             </div>
-        </div>
 
-        <div class="form-group row">
-            <label for="Password">Password:</label>
-            <div class="col-md-10">
-                <InputText @bind-Value="user.Password" label="Password" class="form-control" id="Password"></InputText>
-                <ValidationMessage For="@(() => user.Password)" />
+            <div class="form-group row">
+                <label for="Password">Password:</label>
+                <div class="col-md-10">
+                    <InputText @bind-Value="user.Password" label="Password" class="form-control" id="Password"></InputText>
+                    <ValidationMessage For="@(() => user.Password)"/>
+                </div>
             </div>
-        </div>
 
-        <div class="row" style="margin-top: 15px">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">Sign in</button>
-                <p>@ErrorMessage</p>
+            <div class="row" style="margin-top: 15px">
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success">Sign in</button>
+                    <p>@ErrorMessage</p>
+                </div>
             </div>
-        </div>
-    </EditForm>
+        </EditForm>
+    </div>
 }
 else
 {
     <p>SignOut here</p>
 }
+
 @code {
+
     [Parameter]
     public LoginModel user { get; set; } = new();
 
+    [Parameter]
+    public ApplicationUser currentUser { get; set; }
+
     string ErrorMessage { get; set; }
 
-    public bool isLoggedin { get; set; } = false;
+    [Parameter]
+    public bool IsLoggedin { get; set; }
 
-    protected override Task OnInitializedAsync()
+    public bool AllowGet = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        isLoggedin = false;
-        return base.OnInitializedAsync();
+        if (IsLoggedin)
+        {
+            currentUser = await UserManager.GetCurrentUser();
+            IsLoggedin = true;
+            StateHasChanged();
+        }
+        // currentUser = await UserManager.GetCurrentUser();
+        // if (currentUser != null)
+        //     IsLoggedin = true;
     }
 
     public async Task LoginUser()
     {
+        
         string result = await UserManager.LoginUser(user);
         Console.WriteLine(result);
-        if(user != null)
-        {
-            NavigationManager.NavigateTo("/Welcome");
-            isLoggedin = true;
-            StateHasChanged();
-        }
-        else
-        {
-            Console.WriteLine("Login Failed");
-            ErrorMessage = "Login Failed";
-        }
+    //NavigationManager.NavigateTo("/Welcome");
+        IsLoggedin = true;
+        StateHasChanged();
     }
+    
+
 }
+

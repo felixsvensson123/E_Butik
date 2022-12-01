@@ -18,5 +18,6 @@ builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IProductManager, ProductManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
+builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddOptions();
 await builder.Build().RunAsync();

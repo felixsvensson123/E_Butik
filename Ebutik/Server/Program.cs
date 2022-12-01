@@ -10,7 +10,7 @@ global using Microsoft.AspNetCore.Authorization;
 global using Newtonsoft.Json;
 global using BlazorEcom.Server;
 global using System.Text;
-
+global using BlazorEcom.Server.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -52,6 +52,11 @@ app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();
+
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 
 app.MapRazorPages();

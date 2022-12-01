@@ -1,9 +1,24 @@
 ﻿@inject IUserManager UserManager
 
 @page "/welcome"
+@if (isSignedIn)
+{
+    <h1>Welcome @User.UserName.ToUpper()!</h1>
+}
+   
 
-<h3>Welcome</h3>
 
 @code {
+    public ApplicationUser? User { get; set; }
 
+    bool isSignedIn;
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await UserManager.GetCurrentUser();
+        if (User != null)
+        {
+            isSignedIn = true;
+        }
+    }
 }

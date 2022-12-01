@@ -26,7 +26,7 @@ public class DataContext : IdentityDbContext<ApplicationUser>
             CustomerName = "Admin Account",
             Adress = "Malmö Stad",
             NormalizedEmail = "ADMIN@MAIL.COM",
-            NormalizedUserName = "ADMIN@MAIL.COM",
+            NormalizedUserName = "admin",
             EmailConfirmed = true,
             PasswordHash = Hash.HashPassword(null!, "qwe123")
           
