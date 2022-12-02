@@ -6,8 +6,7 @@ namespace BlazorEcom.Server.Data;
 public class DataContext : IdentityDbContext<ApplicationUser>
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options)
-    {
-        
+    {     
     }
         public DbSet<ProductModel> Products { get; set; }
         public DbSet<ApplicationUser> Customers { get; set; }
@@ -31,7 +30,7 @@ public class DataContext : IdentityDbContext<ApplicationUser>
             PasswordHash = Hash.HashPassword(null!, "qwe123")
           
         };
-    
+
         modelBuilder.Entity<IdentityRole>().HasData(CustomerRole, StaffRole);
         modelBuilder.Entity<ApplicationUser>().HasData(AdminRole);
 

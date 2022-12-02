@@ -1,80 +1,111 @@
 ﻿@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
-
-@if (IsLoggedin == false)
+@inject ILocalStorageService LocalStorage
+@inject IJSRuntime JSRuntime
+@if (Loaded == true)
 {
-    <div class="external-container">
-        <h1>Sign in to account</h1>
-        <EditForm Model=user OnValidSubmit="LoginUser">
-            <DataAnnotationsValidator/>
-            <div class="form-group row">
-                <label for="Username">Username:</label>
-                <div class="col-md-10">
-                    <InputText @bind-Value="user.Username" class="form-control" id="Username"></InputText>
-                    <ValidationMessage For="@(() => user.Username)"/>
-                </div>
-            </div>
 
-            <div class="form-group row">
-                <label for="Password">Password:</label>
-                <div class="col-md-10">
-                    <InputText @bind-Value="user.Password" label="Password" class="form-control" id="Password"></InputText>
-                    <ValidationMessage For="@(() => user.Password)"/>
-                </div>
-            </div>
 
-            <div class="row" style="margin-top: 15px">
-                <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-success">Sign in</button>
-                    <p>@ErrorMessage</p>
+    @if (IsLoggedin == false)
+    {
+        <div class="external-container">
+            <h1>Sign in to account</h1>
+            <EditForm Model=user OnValidSubmit="LoginUser">
+                <DataAnnotationsValidator />
+                <div class="form-group row">
+                    <label for="Username">Username:</label>
+                    <div class="col-md-10">
+                        <InputText @bind-Value="user.Username" class="form-control" id="Username"></InputText>
+                        <ValidationMessage For="@(() => user.Username)" />
+                    </div>
                 </div>
-            </div>
-        </EditForm>
-    </div>
+
+                <div class="form-group row">
+                    <label for="Password">Password:</label>
+                    <div class="col-md-10">
+                        <InputText @bind-Value="user.Password" label="Password" class="form-control" id="Password"></InputText>
+                        <ValidationMessage For="@(() => user.Password)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12 text-right">
+                        <button type="submit" class="btn btn-success">Login</button>
+                        <p>@ErrorMessage</p>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else
+    {
+
+        <button @onclick="@LogOut" class="btn btn-success">Logout</button>
+
+    }
 }
-else
-{
-    <p>SignOut here</p>
-}
-
 @code {
 
     [Parameter]
     public LoginModel user { get; set; } = new();
 
     [Parameter]
-    public ApplicationUser currentUser { get; set; }
+    public ApplicationUser currentUser { get; set; } = new();
+
+    [Parameter]
+    public ApplicationUser compareUser { get; set; }
+
+    public string storedUser;
 
     string ErrorMessage { get; set; }
 
-    [Parameter]
-    public bool IsLoggedin { get; set; }
+    public bool IsLoggedin;
 
-    public bool AllowGet = false;
+    public bool Loaded;
 
     protected override async Task OnInitializedAsync()
     {
-        if (IsLoggedin)
+       /* var UserCheck = await LocalStorage.GetItemAsStringAsync("user");
+         if(compareUser.Id == UserCheck)
+         {
+             await LocalStorage.SetItemAsync("IsLoggedIn", true);
+            Console.WriteLine("success");
+         }
+            */
+
+        var LoginCheck = await LocalStorage.GetItemAsStringAsync("IsLoggedIn");
+        if (LoginCheck == "true")
         {
-            currentUser = await UserManager.GetCurrentUser();
             IsLoggedin = true;
-            StateHasChanged();
+            currentUser = await UserManager.GetCurrentUser();
+
         }
-        // currentUser = await UserManager.GetCurrentUser();
-        // if (currentUser != null)
-        //     IsLoggedin = true;
+        Loaded = true;
+        StateHasChanged();
     }
+
 
     public async Task LoginUser()
     {
-        
         string result = await UserManager.LoginUser(user);
+        currentUser = await UserManager.GetCurrentUser();
+        compareUser = await UserManager.GetCurrentUser();
+        await LocalStorage.SetItemAsync("user", currentUser.Id);
         Console.WriteLine(result);
-    //NavigationManager.NavigateTo("/Welcome");
         IsLoggedin = true;
+        await LocalStorage.SetItemAsync("IsLoggedIn", IsLoggedin);
+        NavigationManager.NavigateTo("/Welcome");
         StateHasChanged();
     }
-    
+    public async Task LogOut()
+    {
+        currentUser = await UserManager.GetCurrentUser();
+        await UserManager.Logout(currentUser);
+        await LocalStorage.RemoveItemAsync("user");
+        IsLoggedin = false;
+        await LocalStorage.SetItemAsync("IsLoggedIn", IsLoggedin);
+        StateHasChanged();
+    }
 
 }
 

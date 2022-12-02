@@ -8,6 +8,7 @@ global using BlazorEcom.Client.Services;
 global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 global using MudBlazor.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

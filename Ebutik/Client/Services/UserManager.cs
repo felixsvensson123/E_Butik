@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Identity;
 using System.Net.Http.Json;
 
 namespace BlazorEcom.Client.Services;
@@ -40,6 +41,17 @@ public class UserManager : IUserManager
 
         return null;
     }
+    public async Task<string> Logout(ApplicationUser user)
+    {
+        
+        var result = await _httpClient.PostAsJsonAsync("api/user/logout", user);
+        if (result.IsSuccessStatusCode)
+        {
+            return await result.Content.ReadAsStringAsync();
+        }
+
+        return null;
+    }
 
     public async Task<ApplicationUser> GetUser(string userId)
     {
@@ -48,7 +60,8 @@ public class UserManager : IUserManager
     }
     public async Task<ApplicationUser> GetCurrentUser()
     {
-        return await _httpClient.GetFromJsonAsync<ApplicationUser>($"api/user/getcurrent");
+        return await _httpClient.GetFromJsonAsync<ApplicationUser>("api/user/getcurrent");
+        
     }
     public async Task<List<ApplicationUser>> GetAllUsers()
     {
@@ -61,6 +74,11 @@ public class UserManager : IUserManager
             await _localStorage.SetItemAsStringAsync("user", $"{id}");
         }
     }
+/*    public async Task<LoginModel> Logout(LoginModel user)
+    {
+        var result = await _httpClient.PostAsJsonAsync<LoginModel?>("api/user/logout", user);
+        
+    }*/
 }
 
 public interface IUserManager
@@ -69,4 +87,6 @@ public interface IUserManager
     Task<string> LoginUser(LoginModel user);
     Task<ApplicationUser> GetCurrentUser();
     Task<ApplicationUser> GetUser(string userId);
+    Task StoreUser(string id);
+    Task<string> Logout(ApplicationUser user);
 }

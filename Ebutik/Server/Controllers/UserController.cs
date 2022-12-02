@@ -14,16 +14,16 @@ public class UserController : ControllerBase
         _userManager = userManager;
         _signInManager = signInManager;
     }
-    
+
     [HttpGet("{name}")]
     public IdentityUser Get(string name)
     {
         return _signInManager.UserManager.FindByNameAsync(name).Result;
     }
-    
+
     //Register User
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody]RegisterModel registerModel)
+    public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
     {
         if (ModelState.IsValid)
         {
@@ -39,21 +39,22 @@ public class UserController : ControllerBase
 
             if (result.Succeeded)
             {
-                 await _userManager.AddToRoleAsync(user, "Customer");
-                 return Ok (result);
-                 
+                await _userManager.AddToRoleAsync(user, "Customer");
+                await _signInManager.PasswordSignInAsync(user.UserName, registerModel.Password, false, false);
+                return Ok(result);
+
             }
 
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
-            
+
             ModelState.AddModelError(string.Empty, "Invalid Login Attempt!");
         }
         return BadRequest(registerModel);
     }
-    
+
     //Login User
     [HttpPost("login")]
     [AllowAnonymous]
@@ -66,11 +67,18 @@ public class UserController : ControllerBase
             {
                 return Ok(result);
             }
-            
+
             ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
         }
 
         return BadRequest();
+    }
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(ApplicationUser user)
+    {
+
+        await _signInManager.SignOutAsync();
+        return Ok(user);
     }
 
     [Authorize]

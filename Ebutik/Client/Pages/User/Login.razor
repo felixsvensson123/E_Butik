@@ -1,7 +1,14 @@
 ﻿@page "/Login"
-<h3>Login</h3>
-<Signup></Signup>
+
+<div class="m-4 login_container" style="display: flex; justify-content: center;">
 <SignIn></SignIn>
+
+</div>
 @code {
-    
+    [Parameter]
+    public ApplicationUser? CurrentUser { get; set; }
+
+    public bool IsOnline;
+
+ 
 }

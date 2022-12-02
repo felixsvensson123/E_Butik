@@ -1,50 +1,52 @@
 ﻿@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
-
-@if (ShowForm)
+@inject ILocalStorageService LocalStorage
+@if (Loaded)
 {
-    <h1>Regiser Account</h1>
-    <EditForm Model="registerModel" OnValidSubmit="RegisterUser">
-        <DataAnnotationsValidator/>
-        <div class="form-group row">
-            <label for="Username">Username:</label>
-            <div class="col-md-10">
-                <InputText @bind-Value="registerModel.Username" class="form-control" id="Username"></InputText>
-                <ValidationMessage For="@(() => registerModel.Username)"/>
+    @if (ShowForm)
+    {
+        <h1>Regiser Account</h1>
+        <EditForm Model="registerModel" OnValidSubmit="RegisterUser">
+            <DataAnnotationsValidator />
+            <div class="form-group row">
+                <label for="Username">Username:</label>
+                    <div class="col-md-10">
+                    <InputText @bind-Value="registerModel.Username" class="form-control" id="Username"></InputText>
+                    <ValidationMessage For="@(() => registerModel.Username)" />
+                </div>
             </div>
-        </div>
 
-        <div class="form-group row">
-            <label for="Adress">Email:</label>
-            <div class="col-md-10">
-                <InputText @bind-Value="registerModel.Adress" class="form-control" id="Adress"></InputText>
-                <ValidationMessage For="@(() => registerModel.Adress)"/>
+            <div class="form-group row">
+                <label for="Adress">Email:</label>
+                <div class="col-md-10">
+                    <InputText @bind-Value="registerModel.Adress" class="form-control" id="Adress"></InputText>
+                    <ValidationMessage For="@(() => registerModel.Adress)" />
+                </div>
             </div>
-        </div>
 
-        <div class="form-group row">
-            <label for="Password">Password:</label>
-            <div class="col-md-10">
-                <InputText @bind-Value="registerModel.Password" label="Password" class="form-control" id="Password"></InputText>
-                <ValidationMessage For="@(() => registerModel.Password)"/>
+            <div class="form-group row">
+                <label for="Password">Password:</label>
+                <div class="col-md-10">
+                    <InputText @bind-Value="registerModel.Password" label="Password" class="form-control" id="Password"></InputText>
+                    <ValidationMessage For="@(() => registerModel.Password)" />
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="ConfirmPassword">Confirm Password:</label>
-            <div class="col-md-10">
-                <InputText @bind-Value="registerModel.ConfirmPassword" class="form-control" id="ConfirmPassword"></InputText>
-                <ValidationMessage For="@(() => registerModel.ConfirmPassword)"/>
+            <div class="form-group row">
+                <label for="ConfirmPassword">Confirm Password:</label>
+                <div class="col-md-10">
+                    <InputText @bind-Value="registerModel.ConfirmPassword" class="form-control" id="ConfirmPassword"></InputText>
+                    <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+                </div>
             </div>
-        </div>
 
-        <div class="row" style="margin-top: 15px">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">Register</button>
+            <div class="row" style="margin-top: 15px">
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success">Register</button>
+                </div>
             </div>
-        </div>
-    </EditForm>
+        </EditForm>
+    }
 }
-
 @code {
 
     [Parameter]
@@ -52,23 +54,26 @@
 
     public ApplicationUser? CurrentUser { get; set; }
 
-    bool HasRegistered = false;
-
     bool ShowForm = true;
 
+    bool Loaded;
     protected override async Task OnInitializedAsync()
     {
-        if (HasRegistered)
+        var LoginCheck = await LocalStorage.GetItemAsStringAsync("IsLoggedIn");
+        if (LoginCheck == "true")
         {
             CurrentUser = await UserManager.GetCurrentUser();
             ShowForm = false;
         }
+        Loaded = true;
+        StateHasChanged();
     }
 
     public async Task RegisterUser()
     {
         await UserManager.RegisterUser(registerModel);
-        HasRegistered = true;
+        CurrentUser = await UserManager.GetCurrentUser();
+        await LocalStorage.SetItemAsync("user", CurrentUser.Id);
         StateHasChanged();
         NavigationManager.NavigateTo("/welcome");
     }
